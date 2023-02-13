@@ -1,0 +1,29 @@
+def find_remaining_jobs():
+    n = int(input("Enter the number of Jobs\n"))
+    jobs = []
+    for i in range(n):
+        start_time = input("Enter job start time in HHMM format\n")
+        end_time = input("Enter job end time in HHMM format\n")
+        profit = int(input("Enter job profit\n"))
+        jobs.append((int(start_time), int(end_time), profit))
+    
+    jobs = sorted(jobs, key=lambda x: x[1])  # sort by end time in increasing order
+    dp = [0] * n  # dp[i] is the maximum profit we can get if we include job i
+
+    for i in range(n):
+        # calculate the maximum profit we can get if we include job i
+        dp[i] = jobs[i][2]
+        for j in range(i):
+            if jobs[j][1] <= jobs[i][0]:  # job j ends before job i starts
+                dp[i] = max(dp[i], dp[j] + jobs[i][2])
+
+    # find the maximum profit we can get
+    max_profit = max(dp)
+
+    # find the number of jobs left and the earnings of other employees
+    remaining_jobs = n - dp.count(max_profit)
+    other_earnings = sum(j[2] for j in jobs if j not in [jobs[i] for i in range(n) if dp[i] == max_profit])
+
+    return [remaining_jobs, other_earnings]
+result = find_remaining_jobs()
+print(result)
